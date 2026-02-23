@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EnerGymAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+57a618b817ae4b1197058159e6c914c5fe4fb2ad")]
 [assembly: System.Reflection.AssemblyProductAttribute("EnerGymAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EnerGymAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

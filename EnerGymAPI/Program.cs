@@ -1,8 +1,15 @@
+using EnerGymAPI.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Configurar el DbContext (Se conecta al appsettings.json)
+builder.Services.AddDbContext<EnerGymContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("EnerGymDb")));
 
 var app = builder.Build();
 
