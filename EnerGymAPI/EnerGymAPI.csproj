@@ -17,7 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Application\DTO\" />
       <Folder Include="Application\Services\" />
       <Folder Include="Controllers\" />
       <Folder Include="Core\Interfaces\" />
