@@ -1,19 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 
- namespace EnerGymAPI.Domain.Entities
+namespace EnerGymAPI.Domain.Entities
 {
-    public class Ejercicio
+    public class SesionEntrenamiento
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public required string Nombre { get; set; }
-        public string? GrupoMuscular { get; set; }
-        public string? Equipo { get; set; }
-        public string? Descripcion { get; set; }
-        public string? ImagenUrl { get; set; }
-        public string? VideoUrl { get; set; }
+        public required Guid UsuarioId { get; set; }
+        public Guid? RutinaId { get; set; }
+        
+        // Android is using Long for `fecha`, usually translating to Unix Timestamp (milliseconds/seconds)
+        // In C# we'll map this to long for accurate binding, or keep DateTime if the mapper handles it.
+        // Assuming Unix Timestamp (long) since the Android client uses `val fecha: Long`
+        public long Fecha { get; set; }
+        
+        public int? DuracionSegundos { get; set; } = 0;
+        public int? EnergiaGeneradaWh { get; set; } = 0;
+        public int? CaloriasQuemadas { get; set; } = 0;
 
-         // Relaciones
-        public ICollection<RutinaEjercicio> RutinasEjercicios { get; set; } = new List<RutinaEjercicio>();
+        // Navigation properties (if needed by EF Core)
+        public Usuario? Usuario { get; set; }
+        public Rutina? Rutina { get; set; }
+        public ICollection<SerieRealizada> SeriesRealizadas { get; set; } = new List<SerieRealizada>();
     }
 }
