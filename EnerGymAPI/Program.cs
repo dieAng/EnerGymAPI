@@ -25,11 +25,10 @@ builder.Services.AddScoped<IMensajeService, MensajeService>();
 builder.Services.AddScoped<IIngredienteService, IngredienteService>();
 builder.Services.AddScoped<IRutinaEjercicioService, RutinaEjercicioService>();
 
-
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-// Configurar el DbContext (Se conecta al appsettings.json)
+// Configurar el DbContext
 builder.Services.AddDbContext<EnerGymDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("EnerGymDb")));
 
@@ -41,7 +40,8 @@ var jwtAudience = builder.Configuration["Jwt:Audience"];
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.RequireHttpsMetadata = false; // Solo para desarrollo
+        // RequireHttpsMetadata será 'true' en producción y 'false' en desarrollo
+        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment(); 
         options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -55,26 +55,64 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Agregar CORS para permitir llamadas desde cualquier origen (necesario si pruebas desde emulador/dispositivo Android)
+// Agregar CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("CorsPolicy", policy =>
     {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        if (builder.Environment.IsDevelopment())
+        {
+            // En desarrollo permitimos todo (Ej. Postman, Emuladores locales)
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        }
+        else
+        {
+            // En producción, restringimos a los dominios autorizados
+            var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials(); // Opcional, necesario si usas cookies/tokens en headers específicos
+        }
     });
 });
 
 var app = builder.Build();
+
+// MVP: Ejecutar migraciones automáticamente al arrancar la aplicación
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<EnerGymDbContext>();
+        if (context.Database.IsRelational())
+        {
+            context.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Ocurrió un error al ejecutar las migraciones de la base de datos.");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+else
+{
+    // En producción es recomendable usar HSTS
+    app.UseHsts();
+}
 
-app.UseCors("AllowAll");
+// Aplicar política CORS configurada
+app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 
