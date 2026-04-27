@@ -25,5 +25,6 @@ using System.Collections.Generic;
         public ICollection<Mensaje> MensajesEnviados { get; set; } = new List<Mensaje>();
         public ICollection<Mensaje> MensajesRecibidos { get; set; } = new List<Mensaje>();
         public ICollection<Comentario> Comentarios { get; set; } = new List<Comentario>();
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     } 
 }
