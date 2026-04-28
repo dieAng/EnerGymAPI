@@ -127,6 +127,9 @@ try
 
     app.MapControllers();
 
+    // Endpoint de bienvenida en la raíz para comprobar que la API está viva
+    app.MapGet("/", () => "¡La API de EnerGym está funcionando correctamente!");
+
     app.Run();
 }
 catch (Exception ex)
