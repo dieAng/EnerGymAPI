@@ -4,8 +4,6 @@ using EnerGymAPI.Domain.Entities;
 using EnerGymAPI.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System;
 
 namespace EnerGymAPI.Controllers
 {
