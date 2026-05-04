@@ -10,6 +10,7 @@ namespace EnerGymAPI.Core.Interfaces
         Task<IEnumerable<RecetaResponseDto>> GetRecetasAsync();
         Task<RecetaResponseDto> GetRecetaByIdAsync(Guid id);
         Task<RecetaResponseDto> CreateRecetaAsync(RecetaCreateRequestDto request);
+        Task<RecetaResponseDto> UpdateRecetaAsync(Guid id, RecetaUpdateRequestDto request);
         Task<bool> DeleteRecetaAsync(Guid id);
     }
 }

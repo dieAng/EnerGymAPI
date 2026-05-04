@@ -83,6 +83,33 @@ namespace EnerGymAPI.Application.Services
             };
         }
 
+        public async Task<RecetaResponseDto> UpdateRecetaAsync(Guid id, RecetaUpdateRequestDto request)
+        {
+            var receta = await _context.Recetas.FindAsync(id);
+            if (receta == null) return null;
+
+            receta.Nombre = request.Nombre ?? receta.Nombre;
+            receta.TiempoPreparacion = request.TiempoPreparacion ?? receta.TiempoPreparacion;
+            receta.Alergenos = request.Alergenos ?? receta.Alergenos;
+            receta.ImagenUrl = request.ImagenUrl ?? receta.ImagenUrl;
+            receta.Descripcion = request.Descripcion ?? receta.Descripcion;
+
+            _context.Recetas.Update(receta);
+            await _context.SaveChangesAsync();
+
+            return new RecetaResponseDto
+            {
+                Id = receta.Id,
+                UsuarioId = receta.UsuarioId,
+                Nombre = receta.Nombre,
+                TiempoPreparacion = receta.TiempoPreparacion,
+                Alergenos = receta.Alergenos,
+                ImagenUrl = receta.ImagenUrl,
+                Descripcion = receta.Descripcion,
+                EsPredisenada = receta.EsPredisenada
+            };
+        }
+
         public async Task<bool> DeleteRecetaAsync(Guid id)
         {
             var receta = await _context.Recetas.FindAsync(id);

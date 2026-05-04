@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EnerGymAPI.Application.DTO.Recetas;
+﻿using EnerGymAPI.Application.DTO.Recetas;
 using EnerGymAPI.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +32,7 @@ namespace EnerGymAPI.Controllers
             {
                 return NotFound();
             }
+
             return Ok(receta);
         }
 
@@ -45,6 +43,18 @@ namespace EnerGymAPI.Controllers
             return CreatedAtAction(nameof(GetReceta), new { id = nuevaReceta.Id }, nuevaReceta);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateReceta(Guid id, RecetaUpdateRequestDto request)
+        {
+            var recetaActualizada = await _recetaService.UpdateRecetaAsync(id, request);
+            if (recetaActualizada == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(recetaActualizada);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReceta(Guid id)
         {
@@ -53,6 +63,7 @@ namespace EnerGymAPI.Controllers
             {
                 return NotFound();
             }
+
             return NoContent();
         }
     }
