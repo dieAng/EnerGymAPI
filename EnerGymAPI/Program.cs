@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi;
 
 try
 {
@@ -27,8 +28,34 @@ try
     builder.Services.AddScoped<IIngredienteService, IngredienteService>();
     builder.Services.AddScoped<IRutinaEjercicioService, RutinaEjercicioService>();
 
-    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-    builder.Services.AddOpenApi();
+    // Configuración avanzada de Swagger/OpenAPI
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "EnerGym API",
+            Version = "v1",
+            Description = "API para la aplicación EnerGym, un planificador de rutinas de gimnasio y alimentación.",
+            Contact = new OpenApiContact
+            {
+                Name = "Tu Nombre",
+                Email = "tu.email@example.com",
+            }
+        });
+
+        // Configurar Swagger para que entienda y use JWT
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Description = "Cabecera de autorización JWT usando el esquema Bearer. Ejemplo: \"Authorization: Bearer {token}\"",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        });
+
+        c.AddSecurityRequirement(_ => new OpenApiSecurityRequirement());
+    });
+
 
     // Configurar el DbContext
     builder.Services.AddDbContext<EnerGymDbContext>(options =>
@@ -42,7 +69,6 @@ try
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
-            // RequireHttpsMetadata será 'true' en producción y 'false' en desarrollo
             options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
             options.SaveToken = true;
             options.TokenValidationParameters = new TokenValidationParameters
@@ -64,19 +90,12 @@ try
         {
             if (builder.Environment.IsDevelopment())
             {
-                // En desarrollo permitimos todo (Ej. Postman, Emuladores locales)
-                policy.AllowAnyOrigin()
-                      .AllowAnyMethod()
-                      .AllowAnyHeader();
+                policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
             }
             else
             {
-                // En producción, restringimos a los dominios autorizados
                 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
-                policy.WithOrigins(allowedOrigins)
-                      .AllowAnyMethod()
-                      .AllowAnyHeader()
-                      .AllowCredentials(); // Opcional, necesario si usas cookies/tokens en headers específicos
+                policy.WithOrigins(allowedOrigins).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
             }
         });
     });
@@ -106,15 +125,33 @@ try
     }
 
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
+    app.UseSwagger(c =>
     {
-        app.MapOpenApi();
-    }
-    else
+        // Cambiamos la ruta del archivo JSON para que no esté en la raíz
+        c.RouteTemplate = "api/swagger/{documentName}/swagger.json";
+    });
+
+    app.UseSwaggerUI(c =>
     {
-        // En producción es recomendable usar HSTS
+        // Apuntamos el endpoint de la UI a la nueva ruta del JSON
+        c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "EnerGym API v1");
+        // Establecemos la ruta de la UI
+        c.RoutePrefix = "api/swagger";
+    });
+
+    // Redirección para comodidad: si alguien va a /api/swagger, lo mandamos a la UI
+    app.MapGet("/api/swagger", context =>
+    {
+        context.Response.Redirect("/api/swagger/index.html");
+        return Task.CompletedTask;
+    });
+
+
+    if (!app.Environment.IsDevelopment())
+    {
         app.UseHsts();
     }
+
 
     // Aplicar política CORS configurada
     app.UseCors("CorsPolicy");
