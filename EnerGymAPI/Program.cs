@@ -38,19 +38,20 @@ try
             Description = "API para la aplicación EnerGym, un planificador de rutinas de gimnasio y alimentación.",
             Contact = new OpenApiContact
             {
-                Name = "Tu Nombre",
-                Email = "tu.email@example.com",
+                Name = "Diego Anguiano",
+                Email = "dam01.2025@gmail.com,
             }
         });
 
         // Configurar Swagger para que entienda y use JWT
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
-            Description = "Cabecera de autorización JWT usando el esquema Bearer. Ejemplo: \"Authorization: Bearer {token}\"",
+            Description = "Introduce solo tu token JWT de autenticación. Ejemplo: \"eyJhbGciOiJIUzI...\"",
             Name = "Authorization",
             In = ParameterLocation.Header,
-            Type = SecuritySchemeType.ApiKey,
-            Scheme = "Bearer"
+            Type = SecuritySchemeType.Http,
+            Scheme = "Bearer",
+            BearerFormat = "JWT"
         });
 
         c.AddSecurityRequirement(_ => new OpenApiSecurityRequirement());
