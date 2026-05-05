@@ -39,7 +39,7 @@ try
             Contact = new OpenApiContact
             {
                 Name = "Diego Anguiano",
-                Email = "dam01.2025@gmail.com,
+                Email = "dam01.2025@gmail.com",
             }
         });
 
