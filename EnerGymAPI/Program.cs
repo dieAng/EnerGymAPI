@@ -35,7 +35,7 @@ try
         {
             Title = "EnerGym API",
             Version = "v1",
-            Description = "API para la aplicación EnerGym, un planificador de rutinas de gimnasio y alimentación.",
+            Description = "API para la aplicación EnerGym, un planificador de rutinas de gimnasio y alimentación.\n\n### Instrucciones de Autenticación:\n1. Utiliza el endpoint de login para obtener tu token JWT (campo: accessToken).\n2. Haz clic en el botón **Authorize**.\n3. Pega **únicamente el token** en el campo de texto.\n4. Haz clic en Authorize.",
             Contact = new OpenApiContact
             {
                 Name = "Diego Anguiano",
