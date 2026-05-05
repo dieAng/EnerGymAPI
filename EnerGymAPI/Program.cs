@@ -38,8 +38,8 @@ try
             Description = "API para la aplicación EnerGym, un planificador de rutinas de gimnasio y alimentación.",
             Contact = new OpenApiContact
             {
-                Name = "Tu Nombre",
-                Email = "tu.email@example.com",
+                Name = "Diego Anguiano",
+                Email = "dam01.2025@gmail.com,
             }
         });
 
